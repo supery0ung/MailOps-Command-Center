@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail 邮件管理</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部控制栏 -->
+        <div class="header">
+            <div class="header-top">
+                <h1>Gmail 邮件管理</h1>
+                <div class="header-right">
+                    <!-- Claude Usage 面板 -->
+                    <div class="usage-panel" id="usage-panel">
+                        <div class="usage-header">
+                            <span class="usage-label">Claude Usage</span>
+                            <button class="usage-edit-btn" id="usage-refresh-btn" onclick="refreshUsageFromCLI()" title="运行 /usage 刷新数据">↻</button>
+                        </div>
+                        <!-- 真实 % 进度条（来自 /usage） -->
+                        <div id="usage-pct-section">
+                            <div class="usage-bar-row">
+                                <span class="usage-bar-label">会话</span>
+                                <div class="usage-bar-track">
+                                    <div class="usage-bar-fill" id="bar-session"></div>
+                                </div>
+                                <span class="usage-bar-val" id="val-session">-</span>
+                            </div>
+                            <div class="usage-bar-row">
+                                <span class="usage-bar-label">本周</span>
+                                <div class="usage-bar-track">
+                                    <div class="usage-bar-fill week" id="bar-week-pct"></div>
+                                </div>
+                                <span class="usage-bar-val" id="val-week-pct">-</span>
+                            </div>
+                            <div class="usage-reset-times" id="usage-reset-times"></div>
+                        </div>
+                        <!-- Token sparkline -->
+                        <div class="usage-sparkline" id="sparkline"></div>
+                        <!-- 手动更新 /usage 数据 -->
+                        <div id="limit-editor" style="display:none">
+                            <div class="usage-hint">运行 <code>/usage</code> 后填入数字：</div>
+                            <div class="limit-editor-row">
+                                <label>会话 % used</label>
+                                <input type="number" id="input-session-pct" min="0" max="100" placeholder="0">
+                            </div>
+                            <div class="limit-editor-row">
+                                <label>本周 % used</label>
+                                <input type="number" id="input-week-pct" min="0" max="100" placeholder="26">
+                            </div>
+                            <button class="limit-save-btn" onclick="savePcts()">更新</button>
+                        </div>
+                    </div>
+                    <!-- 更新规则 -->
+                    <button class="theme-toggle" id="update-rules-btn" onclick="updateRules()" title="根据纠错日志更新分类规则">⚙</button>
+                    <!-- 深色主题切换 -->
+                    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色主题">🌙</button>
+                </div>
+            </div>
+            <div class="controls">
+                <label for="email-count">处理邮件数量:</label>
+                <select id="email-count">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                </select>
+                <button id="fetch-btn" onclick="fetchEmails()">获取邮件</button>
+            </div>
+            <div id="status" class="status">准备就绪</div>
+        </div>
+
+        <!-- 邮件表格 -->
+        <div class="table-container">
+            <table class="email-table" id="email-table">
+                <thead>
+                    <tr>
+                        <th width="40" title="退订">✗</th>
+                        <th width="40"><input type="checkbox" id="select-all" onchange="toggleSelectAll()"></th>
+                        <th width="40" title="重要性">!</th>
+                        <th width="190">分类</th>
+                        <th width="200">发件人</th>
+                        <th>主题</th>
+                    </tr>
+                </thead>
+                <tbody id="email-tbody">
+                    <tr>
+                        <td colspan="6" class="empty-message">点击"获取邮件"开始</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="footer">
+            <button id="execute-btn" onclick="executeClassification()" disabled>
+                执行分类
+            </button>
+        </div>
+    </div>
+
+    <!-- 加载动画 -->
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <div id="loading-text">加载中...</div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
