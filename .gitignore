@@ -1,0 +1,17 @@
+# OAuth 凭证（敏感，不入库）
+credentials.json
+token.json
+lib/credentials.json
+lib/token.json
+
+# 运行时缓存
+.claude/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# 环境
+.env
+venv/
+.venv/
